@@ -15,5 +15,9 @@ requests==2.31.0
 pytest==8.0.0
 pytest-cov==4.1.0
 
+# Notebooks
+jupyter==1.0.0
+notebook==7.0.7
+
 # Utilities
 numpy==1.26.3
