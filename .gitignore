@@ -54,3 +54,5 @@ Thumbs.db
 *.faiss
 *.index
 chroma_db/
+vector_store/
+venv/
