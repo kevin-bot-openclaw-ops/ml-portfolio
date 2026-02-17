@@ -1,43 +1,40 @@
-"""Configuration settings for RAG pipeline."""
+"""Configuration settings for RAG pipeline.
+
+All values can be overridden via environment variables or a .env file.
+"""
 
 import os
-from dataclasses import dataclass
 from pathlib import Path
 
-@dataclass
-class Config:
-    """RAG Pipeline Configuration"""
-    
-    # Paths
-    DATA_DIR: Path = Path("data")
-    VECTOR_STORE_DIR: Path = Path("vector_store")
-    
-    # Embedding settings
-    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
-    EMBEDDING_DIM: int = 384  # all-MiniLM-L6-v2 dimension
-    
-    # Chunking settings
-    CHUNK_SIZE: int = 1000  # characters
-    CHUNK_OVERLAP: int = 200  # characters
-    
-    # Retrieval settings
-    TOP_K: int = 5  # number of chunks to retrieve
-    
-    # LLM settings
-    LLM_MODEL: str = "gpt-3.5-turbo"
-    LLM_TEMPERATURE: float = 0.7
-    MAX_TOKENS: int = 500
-    
-    # Vector store backend
-    VECTOR_STORE_TYPE: str = "faiss"  # "faiss" or "chromadb"
-    
-    # OpenAI API (optional - set via .env)
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    
-    def __post_init__(self):
-        """Create directories if they don't exist."""
-        self.DATA_DIR.mkdir(exist_ok=True)
-        self.VECTOR_STORE_DIR.mkdir(exist_ok=True)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv optional; set env vars manually if missing
 
-# Global config instance
+
+class Config:
+    """Centralised RAG pipeline configuration."""
+
+    # Paths
+    DATA_DIR: Path = Path(os.getenv("DATA_DIR", "data"))
+    VECTOR_STORE_DIR: Path = Path(os.getenv("VECTOR_STORE_DIR", "vector_store"))
+
+    # Embedding — runs locally, no API key needed
+    EMBEDDING_MODEL: str = os.getenv(
+        "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    # Chunking
+    CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "1000"))    # characters
+    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "200"))
+
+    # Retrieval
+    TOP_K: int = int(os.getenv("TOP_K", "5"))
+
+    # LLM — provider selected via LLM_PROVIDER env var
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.7"))
+    MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "500"))
+
+
 config = Config()
